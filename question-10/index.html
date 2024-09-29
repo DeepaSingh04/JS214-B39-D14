@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .car, .customer, .rental-status {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Car Rental Service Simulation</h1>
+    <div class="rental-status">
+        <h2>Rental Status</h2>
+        <pre id="status">Running Simulation...</pre>
+    </div>
+
+    <script>
+        // Constructor function for Car
+        function Car(make, model, year, type, isAvailable = true) {
+            this.make = make;
+            this.model = model;
+            this.year = year;
+            this.type = type;
+            this.isAvailable = isAvailable;
+        }
+
+        // Constructor function for Customer
+        function Customer(name, rentedCars = []) {
+            this.name = name;
+            this.rentedCars = rentedCars;
+        }
+
+        // Method to rent a car
+        Customer.prototype.rentCar = function(car) {
+            if (car.isAvailable) {
+                car.isAvailable = false;
+                this.rentedCars.push(car);
+                console.log(`${this.name} rented ${car.make} ${car.model}`);
+            } else {
+                console.log(`Sorry, ${car.make} ${car.model} is already rented.`);
+            }
+        };
+
+        // Method to return a car
+        Customer.prototype.returnCar = function(car) {
+            const index = this.rentedCars.indexOf(car);
+            if (index > -1) {
+                car.isAvailable = true;
+                this.rentedCars.splice(index, 1);
+                console.log(`${this.name} returned ${car.make} ${car.model}`);
+            } else {
+                console.log(`${this.name} does not have ${car.make} ${car.model} rented.`);
+            }
+        };
+
+        // Constructor function for PremiumCustomer (inherits from Customer)
+        function PremiumCustomer(name, discountRate = 0.1) {
+            Customer.call(this, name);  // Call parent constructor
+            this.discountRate = discountRate;
+        }
+
+        PremiumCustomer.prototype = Object.create(Customer.prototype);
+        PremiumCustomer.prototype.constructor = PremiumCustomer;
+
+        // Function to calculate rental price
+        function calculateRentalPrice(customer, carType, daysRented) {
+            const basePricePerDay = 550;
+            let totalPrice = basePricePerDay * daysRented;
+
+            // Apply different rates for car types
+            if (carType === "SUV") {
+                totalPrice += 100 * daysRented;  // SUVs cost more
+            } else if (carType === "Sedan") {
+                totalPrice += 50 * daysRented;   // Sedans cost moderately more
+            }
+
+            // Apply discount if the customer is a PremiumCustomer
+            if (customer instanceof PremiumCustomer) {
+                totalPrice *= (1 - customer.discountRate);
+            }
+
+            return totalPrice;
+        }
+
+        // Maintenance function
+        function Maintenance(car, delay) {
+            console.log(`Car ${car.make} ${car.model} is under maintenance.`);
+            setTimeout(() => {
+                car.isAvailable = true;
+                console.log(`Car ${car.make} ${car.model} is now available after maintenance.`);
+            }, delay);
+        }
+
+        // Demonstrate functionality
+        const car1 = new Car("Toyota", "Corolla", 2020, "Sedan");
+        const car2 = new Car("Honda", "CRV", 2021, "SUV");
+        const car3 = new Car("Ford", "Mustang", 2019, "Convertible");
+
+        const customer1 = new Customer("John Doe");
+        const customer2 = new PremiumCustomer("Jane Smith");
+
+        // Customer 1 rents a car
+        customer1.rentCar(car1);
+        customer1.rentCar(car2);  // Trying to rent an already rented car
+
+        // Customer 2 rents a car
+        customer2.rentCar(car2);
+        customer2.rentCar(car3);
+
+        // Calculate rental price for a premium customer
+        const rentalPrice = calculateRentalPrice(customer2, "SUV", 3);
+        console.log(`Rental price for ${customer2.name}: $${rentalPrice}`);
+
+        // Customer 2 returns a car
+        customer2.returnCar(car3);
+
+        // Perform maintenance on car3 and simulate availability
+        Maintenance(car3, 2000);
+
+        // Update the rental status in the UI after a delay
+        setTimeout(() => {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = `
+Customer 1 Rented Cars: ${customer1.rentedCars.map(car => `${car.make} ${car.model}`).join(', ')}
+Customer 2 Rented Cars: ${customer2.rentedCars.map(car => `${car.make} ${car.model}`).join(', ')}
+Car 1 Availability: ${car1.isAvailable}
+Car 2 Availability: ${car2.isAvailable}
+Car 3 Availability: ${car3.isAvailable}
+            `;
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>constructor Animal</h1>
+    <script>
+        // 1. Define a constructor function Animal
+function Animal() {
+  this.type = "Animal"; // Set property type to "Animal"
+}
+
+// 2. Add a method sound to Animal's prototype
+Animal.prototype.sound = function() {
+  console.log("Animal sound");
+};
+
+// 3. Define a constructor function Dog that inherits from Animal
+function Dog() {
+  Animal.call(this); // Call the Animal constructor to inherit properties
+}
+
+// 4. Ensure that Dog's prototype inherits from Animal's prototype
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog; // Set the constructor property back to Dog
+
+// 5. Override the sound method in Dog's prototype
+Dog.prototype.sound = function() {
+  console.log("Bark"); // Log "Bark" instead of "Animal sound"
+};
+
+// 6. Create an instance of Dog called myDog
+const myDog = new Dog();
+
+// 7. Call the sound method on myDog
+myDog.sound(); // Output: "Bark"
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce System</title>
+</head>
+<body>
+    <h1>E-commerce Product Management System</h1>
+    <script>
+        // Base Constructor Function: Product
+        function Product(name, price, quantity) {
+            this.name = name;
+            this.price = price;
+            this.quantity = quantity;
+        }
+
+        Product.prototype.updatePrice = function(newPrice) {
+            this.price = newPrice;
+        };
+
+        Product.prototype.getProductInfo = function() {
+            return `Name: ${this.name}, Price: ${this.price}, Quantity: ${this.quantity}`;
+        };
+
+        // Derived Constructor Function: Electronics
+        function Electronics(name, price, quantity, brand, model) {
+            Product.call(this, name, price, quantity);
+            this.brand = brand;
+            this.model = model;
+        }
+
+        Electronics.prototype = Object.create(Product.prototype);
+        Electronics.prototype.constructor = Electronics;
+
+        Electronics.prototype.powerOn = function() {
+            return `${this.name} is powered on.`;
+        };
+
+        Electronics.prototype.powerOff = function() {
+            return `${this.name} is powered off.`;
+        };
+
+        // Derived Constructor Function: Clothing
+        function Clothing(name, price, quantity, size, material) {
+            Product.call(this, name, price, quantity);
+            this.size = size;
+            this.material = material;
+        }
+
+        Clothing.prototype = Object.create(Product.prototype);
+        Clothing.prototype.constructor = Clothing;
+
+        Clothing.prototype.wear = function() {
+            return `You are wearing a ${this.name} made of ${this.material}.`;
+        };
+
+        // Derived Constructor Function: Books
+        function Books(name, price, quantity, author, publisher) {
+            Product.call(this, name, price, quantity);
+            this.author = author;
+            this.publisher = publisher;
+        }
+
+        Books.prototype = Object.create(Product.prototype);
+        Books.prototype.constructor = Books;
+
+        Books.prototype.read = function() {
+            return `You are reading "${this.name}" by ${this.author}.`;
+        };
+
+        // Create instances of each product type
+        const laptop = new Electronics("Laptop", 1000, 5, "Dell", "XPS 13");
+        const tShirt = new Clothing("T-Shirt", 25, 20, "M", "Cotton");
+        const novel = new Books("The Great Gatsby", 15, 10, "F. Scott Fitzgerald", "Scribner");
+
+        // Display properties and methods
+        console.log(laptop.getProductInfo()); // From Product
+        console.log(laptop.powerOn()); // From Electronics
+        console.log(tShirt.getProductInfo()); // From Product
+        console.log(tShirt.wear()); // From Clothing
+        console.log(novel.getProductInfo()); // From Product
+        console.log(novel.read()); // From Books
+    </script>
+</body>
+</html>
